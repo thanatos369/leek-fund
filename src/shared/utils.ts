@@ -17,11 +17,11 @@ const formatNum = (n: number) => {
 
 export const objectToQueryString = (queryParameters: Object): string => {
   return queryParameters
-    ? Object.entries(queryParameters).reduce((queryString, [key, val], index) => {
-        const symbol = queryString.length === 0 ? '?' : '&';
-        queryString += typeof val !== 'object' ? `${symbol}${key}=${val}` : '';
-        return queryString;
-      }, '')
+    ? Object.entries(queryParameters).reduce((queryString, [key, val]) => {
+      const symbol = queryString.length === 0 ? '?' : '&';
+      queryString += typeof val !== 'object' ? `${symbol}${key}=${val}` : '';
+      return queryString;
+    }, '')
     : '';
 };
 
@@ -347,6 +347,12 @@ export function allMarkets(): Array<string> {
       market = StockCategory.HK;
     } else if (/^(usr_)/.test(item)) {
       market = StockCategory.US;
+    } else if (/^(nf_)/.test(item)) {
+      market = StockCategory.Future;
+    } else if (/^[A-Z]+/.test(item)){
+      market = StockCategory.Future;
+    } else if (/^(hf_)/.test(item)) {
+      market = StockCategory.OverseaFuture;
     }
     if (!result.includes(market)) {
       result.push(market);
@@ -361,7 +367,8 @@ export function allStockTimes(): Map<string, Array<number>> {
   stocks.set(StockCategory.HK, [9, 16]);
   // TODO: 判断夏令时,夏令时交易时间为[21, 4]，非夏令时交易时间为[22, 5]
   stocks.set(StockCategory.US, [21, 5]);
-
+  stocks.set(StockCategory.Future, [21, 15]);
+  stocks.set(StockCategory.OverseaFuture, [9, 7]);
   return stocks;
 }
 
@@ -442,7 +449,10 @@ function isRemoteLink(link: string) {
   return /^(https?|vscode-webview-resource|javascript):/.test(link);
 }
 
-export function formatHTMLWebviewResourcesUrl(html: string, conversionUrlFn: (link: string) => string) {
+export function formatHTMLWebviewResourcesUrl(
+  html: string,
+  conversionUrlFn: (link: string) => string
+) {
   const LinkRegexp = /\s?(?:src|href)=('|")(.*?)\1/gi;
   let matcher = LinkRegexp.exec(html);
 
@@ -503,6 +513,7 @@ export function formatLabelString(str: string, params: Record<string, any>) {
       }
     });
   } catch (err) {
+    // @ts-ignore
     window.showErrorMessage(`fail: Label format Error, ${str};\n${err.message}`);
     return '模板格式错误！';
   }

@@ -3,7 +3,10 @@ import ReusedWebviewPanel from './ReusedWebviewPanel';
 import stockTrendPic from './stockTrendPic';
 
 function stockTrend(code: string, name: string, stockCode: string) {
-  if (['0dji', '0ixic'].includes(code)) {
+  if (['0dji', '0ixic', '0inx'].includes(code)) {
+    return stockTrendPic(code, name, stockCode);
+  }
+  if (/^恒生.*指数$/.test(name)) {
     return stockTrendPic(code, name, stockCode);
   }
   stockCode = stockCode.toLowerCase();
@@ -19,11 +22,26 @@ function stockTrend(code: string, name: string, stockCode: string) {
     market = stockCode.substring(0, 2) === 'sh' ? '1' : '0';
   }
   let mcid = market + '.' + code.substr(1);
-  // console.log(`http://quote.eastmoney.com/basic/full.html?mcid=${mcid}`);
+  let url = `https://quote.eastmoney.com/basic/full.html?mcid=${mcid}`;
 
+  // 沪深股票详情地址跳转变更为可查看盘前盘后指数的图表,其他不变
+  if((market === '0' || market === "1") && stockCode.indexOf('sh000') !== 0){
+    url = `https://quote.eastmoney.com/basic/h5chart-iframe.html?code=${code.substr(1)}&market=${market}`;
+  }
+
+  // TODO：问题1. 需要选择合适的显示页面。上面的 eastmoney 网站不支持期货，market 113在这个网页上不支持。
+  // 问题 2. 如果选用东财传统网页，存在交易代码不一致问题。例如甲醇 `MA2201` 在东财上的代码为 `MA201`，`PVC又是 v2201`
+  // 直接采用新浪财经网址，去除 nf的显示
+  const isFuture = /nf_/.test(stockCode) || /hf_/.test(stockCode);
+  if (isFuture) {
+    stockCode = stockCode.replace('nf_', '').replace('hf_', '').toUpperCase();
+    url = `https://finance.sina.com.cn/futures/quotes/${stockCode}.shtml`;
+  }
+
+  let tabTitle = !isFuture ? `股票实时走势(${code})` : `期货实时走势(${name})`;
   const panel = ReusedWebviewPanel.create(
     'stockTrendWebview',
-    `股票实时走势(${code})`,
+    tabTitle,
     ViewColumn.One,
     {
       enableScripts: true,
@@ -46,7 +64,7 @@ function stockTrend(code: string, name: string, stockCode: string) {
   <body>
     <div  style="min-width: 1320px; overflow-x:auto">
       <iframe
-      src="http://quote.eastmoney.com/basic/full.html?mcid=${mcid}"
+      src="${url}"
       frameborder="0"
       style="width: 100%; height: 900px"
     ></iframe>

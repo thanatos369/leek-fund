@@ -11,10 +11,12 @@ export enum SortType {
 
 export enum IconType {
   ARROW = 'arrow',
+  ARROW1 = 'arrow1',
   FOOD1 = 'food1',
   FOOD2 = 'food2',
   FOOD3 = 'food3',
   ICON_FOOD = 'iconfood',
+  NONE = 'none',
 }
 
 /** Tree Item Type */
@@ -84,6 +86,8 @@ export enum StockCategory {
   A = 'A Stock',
   US = 'US Stock',
   HK = 'HK Stock',
+  Future = 'CN Future',
+  OverseaFuture = 'Oversea Future',
   NODATA = 'Not Support Stock',
 }
 

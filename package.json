@@ -2,13 +2,13 @@
   "name": "leek-fund",
   "displayName": "韭菜盒子",
   "description": "韭菜盒子，VSCode 里也可以看股票 & 基金实时数据，做最好用的投资插件",
-  "version": "1.9.9",
+  "version": "2.7.3",
   "author": "giscafer <giscafer@outlook.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/giscafer/leek-fund.git"
   },
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "keywords": [
     "stock",
     "股票",
@@ -60,6 +60,10 @@
         {
           "id": "leekFundView.news",
           "name": "XueQiu News"
+        },
+        {
+          "id": "leekFundView.Forex",
+          "name": "Forex"
         },
         {
           "id": "leekFundView.binance",
@@ -115,6 +119,14 @@
         }
       },
       {
+        "command": "leek-fund.addFundGroup",
+        "title": "添加分组",
+        "icon": {
+          "light": "resources/light/add-group.svg",
+          "dark": "resources/dark/add-group.svg"
+        }
+      },
+      {
         "command": "leek-fund.setFundAmount",
         "title": "设置基金持仓金额",
         "icon": {
@@ -141,6 +153,14 @@
       {
         "command": "leek-fund.viewFundPosition",
         "title": "持仓信息"
+      },
+      {
+        "command": "leek-fund.removeFundGroup",
+        "title": "删除分组"
+      },
+      {
+        "command": "leek-fund.renameFundGroup",
+        "title": "修改分组名称"
       },
       {
         "command": "leek-fund.refreshFund",
@@ -191,8 +211,28 @@
         }
       },
       {
+        "command": "leek-fund.setStockUp",
+        "title": "股票上移",
+        "icon": {
+          "light": "resources/light/up.svg",
+          "dark": "resources/dark/up.svg"
+        }
+      },
+      {
+        "command": "leek-fund.setStockDown",
+        "title": "股票下移",
+        "icon": {
+          "light": "resources/light/down.svg",
+          "dark": "resources/dark/down.svg"
+        }
+      },
+      {
         "command": "leek-fund.deleteStock",
         "title": "删除股票"
+      },
+      {
+        "command": "leek-fund.addStockToBar",
+        "title": "添加至状态栏"
       },
       {
         "command": "leek-fund.stockTrendPic",
@@ -295,7 +335,7 @@
           "group": "navigation"
         },
         {
-          "command": "leek-fund.addFund",
+          "command": "leek-fund.addFundGroup",
           "when": "view == leekFundView.fund",
           "group": "navigation"
         },
@@ -358,31 +398,56 @@
       "view/item/context": [
         {
           "command": "leek-fund.viewFundHistory",
-          "when": "view == leekFundView.fund",
+          "when": "view == leekFundView.fund && viewItem != category",
           "group": "group2"
         },
         {
           "command": "leek-fund.viewFundPosition",
-          "when": "view == leekFundView.fund",
+          "when": "view == leekFundView.fund && viewItem != category",
           "group": "group2"
         },
         {
           "command": "leek-fund.setFundTop",
-          "when": "view == leekFundView.fund",
+          "when": "view == leekFundView.fund && viewItem != category  && viewItem!=nodata",
           "group": "group1"
         },
         {
           "command": "leek-fund.setFundTop",
-          "when": "view == leekFundView.fund",
+          "when": "view == leekFundView.fund && viewItem != category  && viewItem!=nodata",
+          "group": "inline"
+        },
+        {
+          "command": "leek-fund.addFund",
+          "when": "view == leekFundView.fund && viewItem == category",
           "group": "inline"
         },
         {
           "command": "leek-fund.deleteFund",
-          "when": "view == leekFundView.fund",
+          "when": "view == leekFundView.fund && viewItem != category",
           "group": "group4"
         },
         {
+          "command": "leek-fund.removeFundGroup",
+          "when": "view == leekFundView.fund && viewItem == category",
+          "group": "group7"
+        },
+        {
+          "command": "leek-fund.renameFundGroup",
+          "when": "view == leekFundView.fund && viewItem == category",
+          "group": "group7"
+        },
+        {
           "command": "leek-fund.setStockTop",
+          "when": "view == leekFundView.stock && viewItem != category  && viewItem!=nodata",
+          "group": "group1"
+        },
+        {
+          "command": "leek-fund.setStockUp",
+          "when": "view == leekFundView.stock && viewItem != category  && viewItem!=nodata",
+          "group": "group1"
+        },
+        {
+          "command": "leek-fund.setStockDown",
           "when": "view == leekFundView.stock && viewItem != category  && viewItem!=nodata",
           "group": "group1"
         },
@@ -397,9 +462,24 @@
           "group": "inline"
         },
         {
+          "command": "leek-fund.setStockUp",
+          "when": "view == leekFundView.stock && viewItem != category && viewItem!=nodata",
+          "group": "inline"
+        },
+        {
+          "command": "leek-fund.setStockDown",
+          "when": "view == leekFundView.stock && viewItem != category && viewItem!=nodata",
+          "group": "inline"
+        },
+        {
           "command": "leek-fund.deleteStock",
           "when": "view == leekFundView.stock  && viewItem != category",
           "group": "group5"
+        },
+        {
+          "command": "leek-fund.addStockToBar",
+          "when": "view == leekFundView.stock  && viewItem != category",
+          "group": "group6"
         },
         {
           "command": "leek-fund.deletePair",
@@ -441,23 +521,36 @@
             "hk00700",
             "usr_ixic",
             "usr_dji",
-            "usr_inx"
+            "usr_inx",
+            "nf_ZC0",
+            "nf_IC0",
+            "hf_OIL",
+            "hf_CHA50CFD"
           ],
           "description": "配置需要监控的股票代码（建议通过界面新增）"
         },
         "leek-fund.funds": {
           "type": "array",
           "default": [
-            "001632",
-            "420009",
-            "320007",
-            "003096",
-            "001102",
-            "003885",
-            "001071",
-            "005963"
+            [
+              "001632",
+              "420009",
+              "320007",
+              "003096",
+              "001102",
+              "003885",
+              "001071",
+              "005963"
+            ]
           ],
           "description": "配置需要监控的基金代码（建议通过界面新增）"
+        },
+        "leek-fund.fundGroups": {
+          "type": "array",
+          "default": [
+            "我的基金"
+          ],
+          "description": "配置基金分组名称（建议通过界面新增）"
         },
         "leek-fund.binance": {
           "type": "array",
@@ -570,6 +663,31 @@
           "type": "boolean",
           "default": false,
           "description": "开启快讯输出（查看 - 输出 - 韭菜盒子快讯）"
+        },
+        "leek-fund.expandAStock": {
+          "type": "boolean",
+          "default": true,
+          "description": "默认展开A股"
+        },
+        "leek-fund.expandHKStock": {
+          "type": "boolean",
+          "default": false,
+          "description": "默认展开港股"
+        },
+        "leek-fund.expandUSStock": {
+          "type": "boolean",
+          "default": false,
+          "description": "默认展开美股"
+        },
+        "leek-fund.expandCNFuture": {
+          "type": "boolean",
+          "default": false,
+          "description": "默认展开国内期货"
+        },
+        "leek-fund.expandOverseaFuture": {
+          "type": "boolean",
+          "default": false,
+          "description": "默认展开海外期货"
         }
       }
     },
@@ -600,13 +718,14 @@
     "vscode:prepublish": "yarn run compile",
     "compile": "tsc -p ./",
     "postcompile": "yarn --cwd ./template-packages/leek-center run build",
-    "lint": "eslint src --ext ts  --ignore-path .gitignore",
+    "lint": "eslint src --fix --ext ts  --ignore-path .gitignore",
     "watch": "tsc -watch -p ./",
-    "pretest": "yarn run compile && yarn run lint",
+    "pretest": "yarn run lint && yarn run compile",
     "test": "node ./out/_test/runTest.js",
     "deploy": "vsce publish --yarn",
     "package": "vsce package --yarn -o ./",
-    "commitmsg": "commitlint -e $GIT_PARAMS"
+    "commitmsg": "commitlint -e $GIT_PARAMS",
+    "release": "standard-version"
   },
   "config": {
     "commitizen": {
@@ -644,6 +763,7 @@
     "lint-staged": "^10.5.1",
     "mocha": "^7.1.2",
     "prettier": "^2.1.2",
+    "standard-version": "^9.3.2",
     "typescript": "^3.8.3",
     "vsce": "^1.78.0",
     "vscode-test": "^1.3.0"
@@ -651,6 +771,7 @@
   "dependencies": {
     "amplitude": "^5.1.4",
     "axios": "^0.19.2",
+    "cheerio": "^1.0.0-rc.12",
     "compare-versions": "^3.6.0",
     "iconv-lite": "^0.6.2",
     "lodash.clonedeep": "^4.5.0",

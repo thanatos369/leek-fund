@@ -1,20 +1,15 @@
-import { commands, Uri, ViewColumn, WebviewPanel, window } from 'vscode';
+import { commands, ViewColumn, WebviewPanel, window } from 'vscode';
 import FundService from '../explorer/fundService';
 import globalState from '../globalState';
 import { LeekFundConfig } from '../shared/leekConfig';
 import { LeekTreeItem } from '../shared/leekTreeItem';
 import { IAmount } from '../shared/typed';
-import {
-  formatDate,
-  getTemplateFileContent,
-  getWebviewResourcesUrl,
-  toFixed,
-} from '../shared/utils';
+import { formatDate, getTemplateFileContent, toFixed } from '../shared/utils';
 import ReusedWebviewPanel from './ReusedWebviewPanel';
 const cloneDeep = require('lodash.clonedeep');
 
 async function setAmount(fundService: FundService) {
-  const list = fundDataHandler(fundService);
+  // const list = fundDataHandler(fundService);
   const panel = ReusedWebviewPanel.create(
     'setFundAmountWebview',
     `基金持仓金额设置`,
@@ -71,14 +66,16 @@ function fundDataHandler(fundService: FundService) {
   const list = fundList.map((item: LeekTreeItem) => {
     return {
       name: item.info?.name,
-      code: item.id,
+      code: item.info?.code,
       percent: item.info?.percent,
       amount: amountObj[item.info?.code]?.amount || 0,
       earningPercent: item.info?.earningPercent,
       unitPrice: item.info?.unitPrice,
-      priceDate: formatDate(item.info?.time),
+      // priceDate: formatDate(item.info?.time),
       earnings: item.info?.earnings || 0,
       yestEarnings: amountObj[item.info.code]?.earnings || 0,
+      price: item.info?.yestclose,
+      priceDate: item.info?.yestPriceDate,
     };
   });
 
@@ -86,9 +83,9 @@ function fundDataHandler(fundService: FundService) {
 }
 
 function getWebviewContent(panel: WebviewPanel) {
-  const _getWebviewResourcesUrl = (arr: string[]): Uri[] => {
+  /*   const _getWebviewResourcesUrl = (arr: string[]): Uri[] => {
     return getWebviewResourcesUrl(panel.webview, globalState.context.extensionUri, arr);
-  };
+  }; */
 
   panel.webview.html = getTemplateFileContent('fund-amount.html', panel.webview);
 }
@@ -129,6 +126,7 @@ export async function updateAmount() {
     }
   }
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { Datas = [], Expansion } = await FundService.qryFundInfo(filterCodes);
     Datas.forEach((item: any) => {
       const { FCODE, NAV } = item;

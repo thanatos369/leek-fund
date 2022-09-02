@@ -7,9 +7,11 @@ yarn.lock
 package-lock.json
 demo/donate.html
 demo/api.html
-
+yarn-error.log
 .DS_Store
 
 template/leek-center/build
 template-packages/leek-center/.eslintcache
 !template-packages/leek-center/yarn.lock
+
+.idea

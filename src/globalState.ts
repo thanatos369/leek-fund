@@ -22,6 +22,8 @@ let labelFormat = DEFAULT_LABEL_FORMAT;
 let aStockCount = 0;
 let usStockCount = 0;
 let hkStockCount = 0;
+let cnfStockCount = 0; // 期货数量
+let hfStockCount = 0; // 海外期货数量
 let noDataStockCount = 0;
 let isHolidayChina = false; // 初始化状态，默认是false，免得API有问题，就当它不是好了，可以继续运行
 
@@ -29,6 +31,9 @@ let showStockErrorInfo = true; // 控制只显示一次错误弹窗（临时处�
 let immersiveBackground = true; // 基金图表是否沉浸式背景
 
 let isDevelopment = false; // 是否开发环境
+
+let fundGroups: Array<string> = [];
+let fundLists: Array<Array<string>> = [];
 
 export default {
   context,
@@ -43,6 +48,8 @@ export default {
   aStockCount,
   usStockCount,
   hkStockCount,
+  cnfStockCount, // 期货
+  hfStockCount, // 海外期货
   noDataStockCount,
   /**
    * 当天是否中国节假日（在插件启动时获取）
@@ -54,4 +61,6 @@ export default {
   showStockErrorInfo,
   immersiveBackground,
   isDevelopment,
+  fundGroups,
+  fundLists,
 };
