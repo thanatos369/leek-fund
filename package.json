@@ -2,11 +2,11 @@
   "name": "leek-fund",
   "displayName": "韭菜盒子",
   "description": "韭菜盒子，VSCode 里也可以看股票 & 基金实时数据，做最好用的投资插件",
-  "version": "2.7.3",
+  "version": "2.9.0",
   "author": "giscafer <giscafer@outlook.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/giscafer/leek-fund.git"
+    "url": "https://github.com/LeekHub/leek-fund.git"
   },
   "license": "BSD-3-Clause",
   "keywords": [
@@ -60,10 +60,6 @@
         {
           "id": "leekFundView.news",
           "name": "XueQiu News"
-        },
-        {
-          "id": "leekFundView.Forex",
-          "name": "Forex"
         },
         {
           "id": "leekFundView.binance",
@@ -771,7 +767,7 @@
   "dependencies": {
     "amplitude": "^5.1.4",
     "axios": "^0.19.2",
-    "cheerio": "^1.0.0-rc.12",
+    "cheerio": "1.0.0-rc.6",
     "compare-versions": "^3.6.0",
     "iconv-lite": "^0.6.2",
     "lodash.clonedeep": "^4.5.0",
